@@ -1,0 +1,72 @@
+<!-- no need to change the prewritten code.
+complete the script tag code. -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Task Management App</title>
+  </head>
+
+  <body>
+    <div id="task-form">
+      <!-- Create a form to add new tasks -->
+      <form id="create-task-form">
+        <input
+          type="text"
+          id="task-text"
+          placeholder="Enter a new task"
+          
+        />
+        <button id="create-task" type="submit">Add Task</button>
+      </form>
+    </div>
+
+    <div id="task-list">
+      <!-- Tasks will be displayed here -->
+    </div>
+
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io.connect("http://localhost:3000");
+
+      // -------------------write your code here.--------------------
+      //Getting reference to the HTML Elements
+      const inputTask = document.getElementById("task-text");
+      const taskList = document.getElementById("task-list");
+      const createTask = document.getElementById("create-task");
+
+      //Event Listener to create Task
+      createTask.addEventListener("click", function () {
+        // Read the task from input Field
+        // If empty give an alert box
+        console.log(task)
+        const newtask = task.value.trim(); //Trim removes leading and trailing spaces
+        console.log(newtask,"task")
+        if (newtask === "") {
+          console.log("INside")
+          alert("Please Enter a Task");
+        } else {
+          //emitting task to the server
+          socket.emit("new_task", task);
+
+          //adding task to the taskList
+          const taskElement = document.createElement("div");
+          taskElement.innerText = task;
+          taskList.appendChild(taskElement);
+
+          inputTask.value = ""; //Clear the input field after sending the message
+        }
+      });
+      // Event handler for receiving a new task
+      socket.on('new_Task', (task) => {
+            const taskElement = document.createElement('div');
+            taskElement.innerHTML = `
+                <span>${task.text}</span>
+                <button onclick="deleteTask('${task._id}')">Delete</button>
+                <button onclick="updateTask('${task._id}', prompt('Edit task:', '${task.text}'))">Update</button>
+            `;
+            taskList.appendChild(taskElement);
+        });
+    </script>
+  </body>
+</html>
